@@ -1,5 +1,6 @@
 import pygame
 
+
 class Board:
     def __init__(self, col, s):
         self.width = s[0]
@@ -17,8 +18,9 @@ class Board:
     def render(self, screen):
         for i in range(self.width):
             for j in range(self.height):
-                pygame.draw.rect(screen, tuple(self.board[i][j]), ((i * self.cs, self.top + j * self.cs), (self.cs, self.cs)))
+                pygame.draw.rect(screen, self.board[i][j], ((i * self.cs, self.top + j * self.cs), (self.cs, self.cs)))
 
+    # создание поля
     def make_pole(self, colors, size):
         sp1 = self.make_sp(colors[0], colors[1], size[0])
         sp2 = self.make_sp(colors[2], colors[3], size[0])
@@ -28,6 +30,7 @@ class Board:
             sp0.append(self.make_sp(sp1[i], sp2[i], size[1]))
         return sp0
 
+    # генерация цветового поля
     def make_sp(self, col1, col2, a1):
         sp = [[0, 0, 0] for i in range(a1)]
         for i in range(3):
@@ -41,8 +44,9 @@ class Board:
             sp[a1 - 1][i] = s2
         return sp
 
-a = [(255, 165, 0), (50, 205, 50), (255, 248, 220), (128, 0, 0)]
-b = [10, 15]
+
+a = [(255, 165, 0), (50, 205, 50), (255, 248, 220), (128, 0, 0)]  # цвета клеток
+b = [10, 15]  # рамеры клеток
 
 if __name__ == '__main__':
     pygame.init()
