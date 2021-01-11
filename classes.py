@@ -9,6 +9,9 @@ class ILoveHueGame:
         self.board = self.make_board(corner_colors, numbers_of_cells)
         self.random_board = self.random_color_mix(corner_colors)
 
+        # список "недвижимых" точек
+        self.static_cells = [(0, 0), (0, self.height - 1), (self.width - 1, self.height - 1), (self.width - 1, 0)]
+
         self.top = 10
         self.cell_size = 30
 
@@ -20,18 +23,15 @@ class ILoveHueGame:
         return pygame.display.set_mode(size)
 
     def render(self, screen):
+        # рисуем цветные клетки
         for i in range(self.width):
             for j in range(self.height):
                 pygame.draw.rect(screen, self.board[i][j], ((i * self.cell_size, self.top + j * self.cell_size),
                                                             (self.cell_size, self.cell_size)))
-        pygame.draw.circle(screen, (0, 0, 0), (self.cell_size // 2, self.top + self.cell_size // 2), 3)
-        pygame.draw.circle(screen, (0, 0, 0),
-                           (self.cell_size // 2 + self.cell_size * (self.width - 1), self.top + self.cell_size // 2), 3)
-        pygame.draw.circle(screen, (0, 0, 0), (self.cell_size // 2,
-                                               self.top + self.cell_size * (self.height - 1) + self.cell_size // 2), 3)
-        pygame.draw.circle(screen, (0, 0, 0),
-                           (self.cell_size // 2 + self.cell_size * (self.width - 1),
-                            self.top + self.cell_size * (self.height - 1) + self.cell_size // 2), 3)
+        # рисуем "недвижимые" точки
+        for i in self.static_cells:
+            pygame.draw.circle(screen, (0, 0, 0), (
+                self.cell_size // 2 + i[0] * self.cell_size, self.top + self.cell_size // 2 + i[1] * self.cell_size), 3)
 
     # создание поля
     def make_board(self, corner_colors, numbers_of_cells):
