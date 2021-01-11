@@ -1,5 +1,6 @@
 import pygame
 import random
+from copy import deepcopy
 
 
 class ILoveHueGame:
@@ -26,7 +27,7 @@ class ILoveHueGame:
         # рисуем цветные клетки
         for i in range(self.width):
             for j in range(self.height):
-                pygame.draw.rect(screen, self.board[i][j], ((i * self.cell_size, self.top + j * self.cell_size),
+                pygame.draw.rect(screen, self.random_board[i][j], ((i * self.cell_size, self.top + j * self.cell_size),
                                                             (self.cell_size, self.cell_size)))
         # рисуем "недвижимые" точки
         for i in self.static_cells:
@@ -57,8 +58,9 @@ class ILoveHueGame:
             line[cells_width - 1][i] = color2
         return line
 
+    # перемешивание
     def random_color_mix(self, corner_colors):
-        random_mix = self.board.copy()
+        random_mix = deepcopy(self.board)
         cells = list()
         for column in self.board:
             for cell in column:
@@ -70,6 +72,50 @@ class ILoveHueGame:
                 if tuple(random_mix[i][j]) not in corner_colors:
                     random_mix[i][j] = cells.pop(random.randrange(0, len(cells)))
         return random_mix
+
+    def render_start(self, screen):
+        # начальное поле и плавное удаление клеток
+        for i in range(self.width):
+            for j in range(self.height):
+                pygame.draw.rect(screen, self.board[i][j], ((i * self.cell_size, self.top + j * self.cell_size),
+                                                            (self.cell_size, self.cell_size)))
+        for i in self.static_cells:
+            pygame.draw.circle(screen, (0, 0, 0), (
+                self.cell_size // 2 + i[0] * self.cell_size, self.top + self.cell_size // 2 + i[1] * self.cell_size), 3)
+
+        pygame.display.flip()
+        pygame.time.delay(1000)
+        k = 2
+        for i in range(self.width + self.height - 2):
+            for j in range(k):
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        exit()
+
+                # замена цветных клеток на чёрные волной
+                pygame.draw.rect(screen, (0, 0, 0), (((k - j - 1) * self.cell_size, self.top + j * self.cell_size),
+                                                        (self.cell_size, self.cell_size)))
+
+            # рисуем крайние клетки и точки
+            pygame.draw.rect(screen, self.board[self.width - 1][self.height - 1],
+                                (((self.width - 1) * self.cell_size, self.top + (self.height - 1) * self.cell_size),
+                                                    (self.cell_size, self.cell_size)))
+            pygame.draw.rect(screen, self.board[0][self.height - 1], ((0, self.top + (self.height - 1) * self.cell_size),
+                                (self.cell_size, self.cell_size)))
+            pygame.draw.rect(screen, self.board[self.width - 1][0], (((self.width - 1) * self.cell_size, self.top),
+                                (self.cell_size, self.cell_size)))
+            pygame.draw.rect(screen, self.board[0][0], ((0, self.top), (self.cell_size, self.cell_size)))
+
+            for i in self.static_cells:
+                pygame.draw.circle(screen, (0, 0, 0), (
+                    self.cell_size // 2 + i[0] * self.cell_size,
+                    self.top + self.cell_size // 2 + i[1] * self.cell_size), 3)
+
+            clock = pygame.time.Clock()
+            clock.tick(9)
+            pygame.display.flip()
+            k += 1
 
 
 class ILoveHueMenu:
