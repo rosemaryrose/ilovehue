@@ -23,12 +23,21 @@ class ILoveHueGame:
 
         return pygame.display.set_mode(size)
 
+    def get_cell(self, mouse_pos):
+        w = mouse_pos[0]
+        h = mouse_pos[1] - self.top
+
+        if w < 0 or h < 0 or w > self.cell_size * self.width or h > self.cell_size * self.height:
+            return None
+        else:
+            return (w // self.cell_size, h // self.cell_size)
+
     def render(self, screen):
         # рисуем цветные клетки
         for i in range(self.width):
             for j in range(self.height):
                 pygame.draw.rect(screen, self.random_board[i][j], ((i * self.cell_size, self.top + j * self.cell_size),
-                                                            (self.cell_size, self.cell_size)))
+                                                                   (self.cell_size, self.cell_size)))
         # рисуем "недвижимые" точки
         for i in self.static_cells:
             pygame.draw.circle(screen, (0, 0, 0), (
@@ -95,16 +104,17 @@ class ILoveHueGame:
 
                 # замена цветных клеток на чёрные волной
                 pygame.draw.rect(screen, (0, 0, 0), (((k - j - 1) * self.cell_size, self.top + j * self.cell_size),
-                                                        (self.cell_size, self.cell_size)))
+                                                     (self.cell_size, self.cell_size)))
 
             # рисуем крайние клетки и точки
             pygame.draw.rect(screen, self.board[self.width - 1][self.height - 1],
-                                (((self.width - 1) * self.cell_size, self.top + (self.height - 1) * self.cell_size),
-                                                    (self.cell_size, self.cell_size)))
-            pygame.draw.rect(screen, self.board[0][self.height - 1], ((0, self.top + (self.height - 1) * self.cell_size),
-                                (self.cell_size, self.cell_size)))
+                             (((self.width - 1) * self.cell_size, self.top + (self.height - 1) * self.cell_size),
+                              (self.cell_size, self.cell_size)))
+            pygame.draw.rect(screen, self.board[0][self.height - 1],
+                             ((0, self.top + (self.height - 1) * self.cell_size),
+                              (self.cell_size, self.cell_size)))
             pygame.draw.rect(screen, self.board[self.width - 1][0], (((self.width - 1) * self.cell_size, self.top),
-                                (self.cell_size, self.cell_size)))
+                                                                     (self.cell_size, self.cell_size)))
             pygame.draw.rect(screen, self.board[0][0], ((0, self.top), (self.cell_size, self.cell_size)))
 
             for i in self.static_cells:
