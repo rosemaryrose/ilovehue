@@ -10,8 +10,8 @@ class ILoveHueGame:
         self.board = self.make_board(corner_colors, numbers_of_cells)
         self.random_board = self.random_color_mix(corner_colors)
         self.top = 30
-        self.cell_sizex = 315 // self.width
-        self.cell_sizey = (539 - self.top) // self.height
+        self.cell_size_x = 315 // self.width
+        self.cell_size_y = (539 - self.top) // self.height
 
         # список "недвижимых" точек
         self.static_cells = [(0, 0), (0, self.height - 1), (self.width - 1, self.height - 1), (self.width - 1, 0)]
@@ -21,21 +21,23 @@ class ILoveHueGame:
         w = mouse_pos[0]
         h = mouse_pos[1] - self.top
 
-        if w < 0 or h < 0 or w > self.cell_sizex * self.width or h > self.cell_sizey * self.height:
+        if w < 0 or h < 0 or w > self.cell_size_x * self.width or h > self.cell_size_y * self.height:
             return None
         else:
-            return (w // self.cell_sizex, h // self.cell_sizey)
+            return w // self.cell_size_x, h // self.cell_size_y
 
     def render(self, screen):
         # рисуем цветные клетки
         for i in range(self.width):
             for j in range(self.height):
-                pygame.draw.rect(screen, self.random_board[i][j], ((i * self.cell_sizex, self.top + j * self.cell_sizey),
-                                                                   (self.cell_sizex, self.cell_sizey)))
+                pygame.draw.rect(screen, self.random_board[i][j],
+                                 ((i * self.cell_size_x, self.top + j * self.cell_size_y),
+                                  (self.cell_size_x, self.cell_size_y)))
         # рисуем "недвижимые" точки
         for i in self.static_cells:
             pygame.draw.circle(screen, (0, 0, 0), (
-                self.cell_sizex // 2 + i[0] * self.cell_sizex, self.top + self.cell_sizey // 2 + i[1] * self.cell_sizey), 3)
+                self.cell_size_x // 2 + i[0] * self.cell_size_x,
+                self.top + self.cell_size_y // 2 + i[1] * self.cell_size_y), 3)
 
     # создание поля
     def make_board(self, corner_colors, numbers_of_cells):
@@ -48,7 +50,8 @@ class ILoveHueGame:
         return board
 
     # генерация цветового поля
-    def make_line(self, start_color, end_color, cells_width):
+    @staticmethod
+    def make_line(start_color, end_color, cells_width):
         line = [[0, 0, 0] for _ in range(cells_width)]
         for i in range(3):
             color0 = start_color[i]
@@ -80,11 +83,12 @@ class ILoveHueGame:
         # начальное поле и плавное удаление клеток
         for i in range(self.width):
             for j in range(self.height):
-                pygame.draw.rect(screen, self.board[i][j], ((i * self.cell_sizex, self.top + j * self.cell_sizey),
-                                                            (self.cell_sizex, self.cell_sizey)))
+                pygame.draw.rect(screen, self.board[i][j], ((i * self.cell_size_x, self.top + j * self.cell_size_y),
+                                                            (self.cell_size_x, self.cell_size_y)))
         for i in self.static_cells:
             pygame.draw.circle(screen, (0, 0, 0), (
-                self.cell_sizex // 2 + i[0] * self.cell_sizex, self.top + self.cell_sizey // 2 + i[1] * self.cell_sizey), 3)
+                self.cell_size_x // 2 + i[0] * self.cell_size_x,
+                self.top + self.cell_size_y // 2 + i[1] * self.cell_size_y), 3)
 
         pygame.display.flip()
         pygame.time.delay(1000)
@@ -97,24 +101,24 @@ class ILoveHueGame:
                         exit()
 
                 # замена цветных клеток на чёрные волной
-                pygame.draw.rect(screen, (0, 0, 0), (((k - j - 1) * self.cell_sizex, self.top + j * self.cell_sizey),
-                                                     (self.cell_sizex, self.cell_sizey)))
+                pygame.draw.rect(screen, (0, 0, 0), (((k - j - 1) * self.cell_size_x, self.top + j * self.cell_size_y),
+                                                     (self.cell_size_x, self.cell_size_y)))
 
             # рисуем крайние клетки и точки
             pygame.draw.rect(screen, self.board[self.width - 1][self.height - 1],
-                             (((self.width - 1) * self.cell_sizex, self.top + (self.height - 1) * self.cell_sizey),
-                              (self.cell_sizex, self.cell_sizey)))
+                             (((self.width - 1) * self.cell_size_x, self.top + (self.height - 1) * self.cell_size_y),
+                              (self.cell_size_x, self.cell_size_y)))
             pygame.draw.rect(screen, self.board[0][self.height - 1],
-                             ((0, self.top + (self.height - 1) * self.cell_sizey),
-                              (self.cell_sizex, self.cell_sizey)))
-            pygame.draw.rect(screen, self.board[self.width - 1][0], (((self.width - 1) * self.cell_sizex, self.top),
-                                                                     (self.cell_sizex, self.cell_sizey)))
-            pygame.draw.rect(screen, self.board[0][0], ((0, self.top), (self.cell_sizex, self.cell_sizey)))
+                             ((0, self.top + (self.height - 1) * self.cell_size_y),
+                              (self.cell_size_x, self.cell_size_y)))
+            pygame.draw.rect(screen, self.board[self.width - 1][0], (((self.width - 1) * self.cell_size_x, self.top),
+                                                                     (self.cell_size_x, self.cell_size_y)))
+            pygame.draw.rect(screen, self.board[0][0], ((0, self.top), (self.cell_size_x, self.cell_size_y)))
 
             for i in self.static_cells:
                 pygame.draw.circle(screen, (0, 0, 0), (
-                    self.cell_sizex // 2 + i[0] * self.cell_sizex,
-                    self.top + self.cell_sizey // 2 + i[1] * self.cell_sizey), 3)
+                    self.cell_size_x // 2 + i[0] * self.cell_size_x,
+                    self.top + self.cell_size_y // 2 + i[1] * self.cell_size_y), 3)
 
             clock = pygame.time.Clock()
             clock.tick(9)

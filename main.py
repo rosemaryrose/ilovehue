@@ -19,6 +19,9 @@ if __name__ == '__main__':
 
     now_cell = (None, None)
     cell_color = (None, None, None)
+    mouse_pos = None
+    click_width = None
+    click_height = None
 
     while running:
         for event in pygame.event.get():
@@ -29,8 +32,8 @@ if __name__ == '__main__':
                 if now_cell is not None and now_cell not in board.static_cells:
                     cell_color = board.random_board[now_cell[0]][now_cell[1]]
 
-                    click_width = event.pos[0] - board.cell_sizex * (now_cell[0])
-                    click_height = event.pos[1] - board.cell_sizey * (now_cell[1]) - board.top
+                    click_width = event.pos[0] - board.cell_size_x * (now_cell[0])
+                    click_height = event.pos[1] - board.cell_size_y * (now_cell[1]) - board.top
 
             if event.type == pygame.MOUSEMOTION:
                 mouse_pos = event.pos
@@ -70,10 +73,10 @@ if __name__ == '__main__':
         # отрисовка движущейся клетки
         if now_cell != (None, None) and cell_color != (None, None, None):
             pygame.draw.rect(screen, (0, 0, 0), (
-                (now_cell[0] * board.cell_sizex, now_cell[1] * board.cell_sizey + board.top),
-                (board.cell_sizex, board.cell_sizey)))
+                (now_cell[0] * board.cell_size_x, now_cell[1] * board.cell_size_y + board.top),
+                (board.cell_size_x, board.cell_size_y)))
             pygame.draw.rect(screen, cell_color, (
-                (mouse_pos[0] - click_width, mouse_pos[1] - click_height), (board.cell_sizex, board.cell_sizey)))
+                (mouse_pos[0] - click_width, mouse_pos[1] - click_height), (board.cell_size_x, board.cell_size_y)))
 
         pygame.display.flip()
     pygame.quit()
