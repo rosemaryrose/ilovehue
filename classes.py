@@ -126,5 +126,17 @@ class ILoveHueGame:
             k += 1
 
 
-class ILoveHueMenu:
+class ILoveHueMenu:  # заготовка под меню (в след. коммите добавлю все картинки/кнопки)
+    def __init__(self):
+        background = pygame.sprite.Group()
+        buttons = pygame.sprite.Group()
+
+    def render_start(self, screen):
+        pass
+
+    def render(self, screen):
+        pass
+
+
+class Button:  # заготовка под кнопки
     pass
