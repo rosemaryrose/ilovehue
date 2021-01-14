@@ -1,17 +1,24 @@
-from classes import *
+from ilh1 import *
+import sqlite3
 
-corner_colors = [(255, 165, 0), (50, 205, 50), (255, 248, 220), (128, 0, 0)]  # цвета клеток
-size = [3, 3]  # размеры поля
+con = sqlite3.connect("levels_db.db")
+cur = con.cursor()
+result = list(cur.execute("""SELECT * FROM levels
+            WHERE id = """ + input()).fetchone())
+con.close()
+
+corner_colors = [tuple([int(k) for k in i.split(', ')]) for i in result[3:7]]  # цвета клеток
+size = [result[1], result[2]]  # размеры поля
+black_p = result[8]
 display_size = 315, 545
 
 if __name__ == '__main__':
     pygame.init()
-    pygame.display.set_caption('ILoveHue')
+    pygame.display.set_caption('Gradient Puzzle')
 
     screen = pygame.display.set_mode(display_size)
 
     running = True
-
     now_cell = (None, None)
     cell_color = (None, None, None)
     mouse_pos = None
@@ -26,7 +33,6 @@ if __name__ == '__main__':
             '''
             # настройка
             menu = ILoveHueMenu()
-
             # отрисовка заставки
             menu.render_start(screen)
             pygame.display.flip()
@@ -45,7 +51,7 @@ if __name__ == '__main__':
                 pygame.display.flip()
         elif state == 'game':
             # настройка
-            board = ILoveHueGame(corner_colors, size)
+            board = ILoveHueGame(corner_colors, size, black_p)
 
             # отрисовка начала игры (это надо будет потом перенести, ибо у нас изначально будет меню)
             board.render_start(screen)
@@ -102,6 +108,7 @@ if __name__ == '__main__':
 
                 pygame.display.flip()
 
+                # конец игры
                 if board.board == board.random_board:
                     print('Поздравляем, вы собрали ilovehue!')
                     screen.fill((0, 0, 0))
