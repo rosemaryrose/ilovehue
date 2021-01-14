@@ -1,20 +1,38 @@
 import pygame
-import random
+from random import randrange
 from copy import deepcopy
 
 
 class ILoveHueGame:
-    def __init__(self, corner_colors, numbers_of_cells):
+    def __init__(self, corner_colors, numbers_of_cells, black_p):
         self.width = numbers_of_cells[0]
         self.height = numbers_of_cells[1]
         self.board = self.make_board(corner_colors, numbers_of_cells)
-        self.random_board = self.random_color_mix(corner_colors)
         self.top = 30
         self.cell_size_x = 315 // self.width
         self.cell_size_y = (539 - self.top) // self.height
 
         # список "недвижимых" точек
         self.static_cells = [(0, 0), (0, self.height - 1), (self.width - 1, self.height - 1), (self.width - 1, 0)]
+
+        if black_p == 1:
+            for j in range(1, self.height - 1):
+                self.static_cells.append((0, j))
+                self.static_cells.append((self.width - 1, j))
+        elif black_p == 2:
+            for i in range(1, self.width - 1):
+                self.static_cells.append((i, 0))
+                self.static_cells.append((i, self.height - 1))
+        elif black_p == 3:
+            for i in range(1, self.width - 1):
+                self.static_cells.append((i, 0))
+                self.static_cells.append((i, self.height - 1))
+            for j in range(1, self.height - 1):
+                self.static_cells.append((0, j))
+                self.static_cells.append((self.width - 1, j))
+
+        # получение перемешанного поля
+        self.random_board = self.random_color_mix()
 
     def get_cell(self, mouse_pos):
         # получение координат клетки, в которой сейчас мышка
@@ -65,18 +83,20 @@ class ILoveHueGame:
         return line
 
     # перемешивание
-    def random_color_mix(self, corner_colors):
+    def random_color_mix(self):
         random_mix = deepcopy(self.board)
         cells = list()
-        for column in self.board:
-            for cell in column:
-                if tuple(cell) not in corner_colors:
-                    cells.append(cell)
 
         for i in range(self.width):
             for j in range(self.height):
-                if tuple(random_mix[i][j]) not in corner_colors:
-                    random_mix[i][j] = cells.pop(random.randrange(0, len(cells)))
+                if (i, j) not in self.static_cells:
+                    cells.append(self.board[i][j])
+
+        for i in range(self.width):
+            for j in range(self.height):
+                if (i, j) not in self.static_cells:
+                    random_mix[i][j] = cells.pop(randrange(0, len(cells)))
+
         return random_mix
 
     def render_start(self, screen):
@@ -105,15 +125,10 @@ class ILoveHueGame:
                                                      (self.cell_size_x, self.cell_size_y)))
 
             # рисуем крайние клетки и точки
-            pygame.draw.rect(screen, self.board[self.width - 1][self.height - 1],
-                             (((self.width - 1) * self.cell_size_x, self.top + (self.height - 1) * self.cell_size_y),
+            for i in self.static_cells:
+                pygame.draw.rect(screen, self.board[i[0]][i[1]],
+                             (((i[0]) * self.cell_size_x, self.top + (i[1]) * self.cell_size_y),
                               (self.cell_size_x, self.cell_size_y)))
-            pygame.draw.rect(screen, self.board[0][self.height - 1],
-                             ((0, self.top + (self.height - 1) * self.cell_size_y),
-                              (self.cell_size_x, self.cell_size_y)))
-            pygame.draw.rect(screen, self.board[self.width - 1][0], (((self.width - 1) * self.cell_size_x, self.top),
-                                                                     (self.cell_size_x, self.cell_size_y)))
-            pygame.draw.rect(screen, self.board[0][0], ((0, self.top), (self.cell_size_x, self.cell_size_y)))
 
             for i in self.static_cells:
                 pygame.draw.circle(screen, (0, 0, 0), (
@@ -126,7 +141,8 @@ class ILoveHueGame:
             k += 1
 
 
-class ILoveHueMenu:  # заготовка под меню (в след. коммите добавлю все картинки/кнопки)
+class ILoveHueMenu:
+    # заготовка под меню (в след. коммите добавлю все картинки/кнопки)
     def __init__(self):
         background = pygame.sprite.Group()
         buttons = pygame.sprite.Group()
