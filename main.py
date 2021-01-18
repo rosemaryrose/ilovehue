@@ -1,5 +1,6 @@
-from ilh1 import *
+from classes import *
 import sqlite3
+import pygame
 
 con = sqlite3.connect("levels_db.db")
 cur = con.cursor()
